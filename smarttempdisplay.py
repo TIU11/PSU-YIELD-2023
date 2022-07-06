@@ -17,10 +17,16 @@ lcd.openWaitForAttachment(1000)
 #Set Temperature Variable
 showTemp = str(temperatureSensor.getTemperature()) + " °C"
 
+def getTemp():
+    lcd.writeText(LCDFont.FONT_6x12, 0, 0, showTemp)
+    # Print for Debugging in console comment later
+    print(" Temperature: " + str(temperatureSensor.getTemperature()) + " °C" )
+
+
+
 #Use your Phidgets 
 while(True):
-    lcd.writeText(LCDFont.FONT_6x12, 0, 0, showTemp)
-    print(" Temperature: " + str(temperatureSensor.getTemperature()) + " °C" )
+    getTemp()
     time.sleep(1)
     lcd.flush()
 
