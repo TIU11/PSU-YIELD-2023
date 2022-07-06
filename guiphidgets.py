@@ -24,10 +24,15 @@ def getTemp():
     # Print for Debugging in console comment later
     print(" Temperature: " + showTemp )
 
+def convertTemp():
+    convertTemp = (temperatureSensor.getTemperature() * 1.8) + 32 
+    showTemp = str(convertTemp) + " °F"
+    message.value = showTemp
 
 # When button is pressed get temperature    
 btn.when_pressed = getTemp
 message = Text(app)
 button = PushButton(app, text="Get Temperature", command=getTemp)
+button2 = PushButton(app, text="Convert Temperature to Fahrenheit", command=convertTemp)
 
 app.display()
