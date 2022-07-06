@@ -21,13 +21,13 @@ def getTemp():
     lcd.writeText(LCDFont.FONT_6x12, 0, 0, showTemp)
     # Print for Debugging in console comment later
     print(" Temperature: " + str(temperatureSensor.getTemperature()) + " °C" )
-
+    lcd.flush()
 
 
 #Use your Phidgets 
 while(True):
     getTemp()
     time.sleep(1)
-    lcd.flush()
+    autoFlush = lcd.getAutoFlush()
 
   
