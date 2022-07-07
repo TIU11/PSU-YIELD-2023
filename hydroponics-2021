@@ -1,0 +1,139 @@
+# Chris Champion
+# MCP, MCSE, Network+, ITSC
+# Business Educator
+# Red Land High School
+# West Shore School District
+
+#--- import commonly used operations___#
+import time
+from machine import Pin, Timer
+import machine
+import uasyncio as asyncio
+import sys
+import micropython
+import gc
+
+#--------------------------------------------------#
+# PINS: control each hardware device and defines
+# if the pins are taking in or letting out signals
+
+water_pump = Pin(1,Pin.OUT)
+nutrient_pump = Pin(3,Pin.OUT) 
+solenoid = Pin(4,Pin.OUT)
+water_level = Pin(8,Pin.IN)
+emergency_water_level = Pin(6,Pin.IN)
+led_pin = Pin(0,Pin.OUT)
+error_light = Pin(9,Pin.OUT)
+fill_light = Pin(10,Pin.OUT)
+hold_light = Pin(11,Pin.OUT)
+drain_light = Pin(12,Pin.OUT)
+rest_light = Pin(13,Pin.OUT)
+
+
+#--------------------------------------------------#
+
+#----- These variables can be changed ----#
+flood_time = 1800 #seconds
+drain_time = 300 #seconds
+wait_time = 3600 # seconds to wait between ebb/flow cycles
+              # - it might the same as flood time
+pump_timeout = 90 # turn pump off if it's been running longer than this (usually takes 60 seconds)
+error_timeout = 1 #seconds - error handling to get the pump to reset and try again
+#-----------------------------------------#
+
+water_pump.off() # make sure stuff is off before filling
+solenoid.off()
+
+
+print("############################################################")
+print("#  Booting... you have 5 seconds to interrupt before loop  #")
+print("############################################################")
+
+time.sleep(5) #five seconds before the loop starts - helps with programming
+
+while True: #runs rest of program in a loop
+
+    try:
+        print("")
+        print("             -------    Get ready    -------")
+        print("")
+        time.sleep(2)
+        rest_light.off()
+        error_light.off()
+
+        solenoid.on() # open
+        water_pump.on()
+        print("Water pump on")
+        print("")
+        fill_light.on()
+
+        now = time.time() #start the timer for pump burnout protection
+        
+    #*** This section is a loop to fill until the water reaches the sensor ***
+        while True:
+            is_dry = (water_level.value() == 1) # 1 = normal state of sensor
+            if is_dry:
+                print("        water sensors dry - filling for", time.time() - now, "seconds")
+                if time.time() > now + pump_timeout:    # elapsed time exceeds that needed to fill, stop all, alert.
+                    fill_light.off()
+                    water_pump.off()        # shut down lights, solenoids, and motors
+                    solenoid.off()
+                    while error_timeout < 60:                         #
+                        error_light.on()                #  Added to 
+                        time.sleep(0.5)                   #  protect the pump from
+                        error_light.off()               #  burning out if the tank
+                        time.sleep(0.5)                   #  runs dry
+                        error_timeout += 1
+                        print(">>>>>>>>>>>>> pump timeout - resetting in", 60 - error_timeout, "seconds <<<<<<<<<<<")
+                    break
+            else:
+                print("**** WATER DETECTED!! STOP PUMP!!! ****")
+                print("")
+                break
+            time.sleep(0.2)   
+    #*************************************************************************
+        
+        solenoid.off()
+        water_pump.off()
+        fill_light.off()
+        hold_light.on()
+        
+        print("Water pump off, fill solenoid closed to hold water")
+        
+        time.sleep(flood_time)
+        
+        hold_light.off()
+        drain_light.on()
+        solenoid.on() #open to drain
+        print("Open drain solenoid to drain, wait",drain_time, "seconds.")
+        time.sleep(drain_time)
+        solenoid.off() #reset it to closed (default)
+        drain_light.off()
+        rest_light.on()
+        
+        # This last bit of code "sleeps" the code until it loops again 
+        print("")
+        print("Waiting for next cycle")
+        time.sleep(wait_time)
+        print("")
+        print("****************** END OF BIG LOOP ***********************")
+        print("")
+
+
+    except: # if something does break, catch the error and turn everything off
+        print("**************************")
+        print("* Error... shutting down *")
+        print("**************************")
+        print("")
+        print("You may disconnect the cable now")
+        
+        error_light.on()
+        water_pump.off()
+        solenoid.off()
+        
+print("Big While loop Ended - you should never see this")
+    
+    
+# ------------------ unused code examples --------------------#
+   #nutrient_pump.off() # turn off pump
+   #nutrient_pump.on() #turns on pump if needed
