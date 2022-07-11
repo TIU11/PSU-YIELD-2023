@@ -33,6 +33,7 @@ while (True):
     powerPlug.setState(0) #Turns pump off
     time.sleep(3*60) #Stays off for this many seconds
 
+# The following loop displays the pH and temperature readings on the LCD screen.
 while (True):
     lcd.writeText(LCDFont.FONT_6x12, 0, 15, "pH Level: " + str(phSensor.getPH()) + " pH")
     #ptint("PH Level: " + str(phSensor.getPH()))
