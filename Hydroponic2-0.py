@@ -1,4 +1,4 @@
-# All the outputs we are using. - Scott Benson
+#Add Phidgets Library 
 from Phidget22.Phidget import *
 from Phidget22.Devices.DigitalOutput import *
 from Phidget22.Devices.LCD import *
@@ -14,7 +14,7 @@ temp = TemperatureSensor()
 
 #Address
 powerPlug.setIsHubPortDevice(True)
-powerPlug.setHubPort(3)
+powerPlug.setHubPort(3) #This number indicates the port that is being used on the VINT Hub for the Power Plug.
 
 #Open
 powerPlug.openWaitForAttachment(5000)
@@ -22,14 +22,19 @@ lcd.openWaitForAttachment(1000)
 phSensor.openWaitForAttachment(1000)
 temp.openWaitForAttachment(1000)
 
-#this controls the brightness of the LCD screen.
-#Makes it easier to see in the dark! - Scott Benson
-lcd.setBacklight(0.25)
+#Use your Phidgets
 
-powerPlug.setState(1)
+lcd.setBacklight(0.25) #This controls the brightness of the LCD screen.
+
+#The PowerPlug controls the pump.
+while (True):
+    powerPlug.setState(1) #Turns pump on
+    time.sleep(3*60) # Stays on for this many seconds
+    powerPlug.setState(0) #Turns pump off
+    time.sleep(3*60) #Stays off for this many seconds
 
 while (True):
-    lcd.writeText(LCDFont.FONT_6x12, 0, 15, "PH Level: " + str(phSensor.getPH()) + " PH")
+    lcd.writeText(LCDFont.FONT_6x12, 0, 15, "pH Level: " + str(phSensor.getPH()) + " pH")
     #ptint("PH Level: " + str(phSensor.getPH()))
     time.sleep(0.25)
     lcd.writeText(LCDFont.FONT_6x12, 0, 35, "Temp: " + str(temp.getTemperature()))
