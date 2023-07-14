@@ -1,14 +1,9 @@
 from flask import *
 from time import time, strftime, sleep
-from gpiozero import LED
 from Phidget22.Phidget import *
 from Phidget22.Devices.TemperatureSensor import *
 
-red = LED(17)
-
-app = Flask(__name__)
-
-@app.route('/')
+#red = LED(17)
 
 def get_temp_data():
         #Create 
@@ -19,10 +14,12 @@ def get_temp_data():
     readTemp = str(temperatureSensor.getTemperature())
 
     return (readTemp)
-    
+app = Flask(__name__)
+
+@app.route('/') 
+   
 def index():
     readTemp = get_temp_data()
-    print(readTemp)
     now = time()
     now = strftime("%Y-%m-%d %H:%M")
     templateData = {
