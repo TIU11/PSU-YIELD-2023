@@ -4,12 +4,6 @@ from gpiozero import LED
 from Phidget22.Phidget import *
 from Phidget22.Devices.TemperatureSensor import *
 
-#Create 
-temperatureSensor = TemperatureSensor()
-
-#Open 
-temperatureSensor.openWaitForAttachment(1000)
-
 red = LED(17)
 
 app = Flask(__name__)
@@ -28,6 +22,11 @@ def index():
 #@app.route("/change_led_status/<int:status>", methods=['POST'])
 
 def get_temp_data():
+        #Create 
+    temperatureSensor = TemperatureSensor()
+
+    #Open 
+    temperatureSensor.openWaitForAttachment(1000)
     readTemp = temperatureSensor.getTemperature()
 
     return render_template('index.html',readTemp=readTemp)
