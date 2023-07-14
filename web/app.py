@@ -22,6 +22,7 @@ def get_temp_data():
     
 def index():
     readTemp = get_temp_data()
+    print(readTemp)
     now = time()
     now = strftime("%Y-%m-%d %H:%M")
     templateData = {
