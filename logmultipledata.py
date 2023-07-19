@@ -3,7 +3,7 @@
 from Phidget22.Phidget import *
 from Phidget22.Devices.TemperatureSensor import *
 #Required for sleep statement
-import time
+from time import time, sleep, strftime
 import csv
 
 #Create
@@ -21,7 +21,8 @@ with open ('phidgets_temperature.csv','w') as datafile:
     # Column Headers for CSV File
     writer.writerow(['Time', 'Temp', 'Light'])
     def read_data():
-        now = time().strftime('%I:%M:%S %p') # 2:05:01 PM
+        now = time()
+        now = strftime('%I:%M:%S %p') # 2:05:01 PM
         temp = temperatureSensor.getTemperature()
         light = lightSensor.getLuminance()
         return [now, temp, light]
@@ -31,7 +32,7 @@ with open ('phidgets_temperature.csv','w') as datafile:
         #Update user
         print("Logging data...")
        #Write data to file in CSV format 
-        writer.write_row(read_data())
+        writer.writerow(read_data())
         datafile.flush()
         print("row was written")
         #Increment count
